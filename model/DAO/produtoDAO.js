@@ -79,38 +79,6 @@ const mdlSelectProdutoById = async function (id) {
     }
 }
 
-//Retorna a lista de todos os produtos
-const mdlSelectProdutoByIdLojista = async function (idLojista) {
-
-    //Script para buscar todos os itens no BD
-    let sql = `select 
-	    produto.id, 
-        produto.nome as nome_produto, 
-        produto.descricao as descricao_produto, 
-        produto.peso as peso_produto,
-        produto.cupom as cupom_produto,
-        produto.url as url_produto,
-        produto.status_produto,
-        produto.id_lojista,
-        lojista.nome as nome_lojista,
-        lojista.email as email_lojista
-    from tbl_produto as produto
-	    inner join tbl_lojista as lojista
-    		on produto.id_lojista = lojista.id
-    where produto.id_lojista = ${idLojista};`;
-
-    //$queryRawUnsafe(sql) - permite interpretar uma variavel como sendo um sriptSQL
-    //queryRaw('select * from tbl_aluno') - permite interpretar o scriptSQL direto no metodo
-    let rsProduto = await prisma.$queryRawUnsafe(sql)
-
-    //Valida de o Banco de Dados retornou algum registro
-    if (rsProduto.length > 0) {
-        return rsProduto
-    } else {
-        return false;
-    }
-}
-
 const mdlInsertProduto = async (dadosProduto) => {
     let sql = `
     insert into tbl_produto(

@@ -113,60 +113,7 @@ const getProdutoPeloId = async function (id) {
     }
 }
 
-//Retorna o aluno filtrando pelo ID
-const getProdutoPeloIdLojista = async function (idLojista) {
-
-    //Validação do ID
-    if (idLojista == '' || idLojista == undefined || isNaN(idLojista)) {
-        return message.ERROR_INVALID_ID
-    } else {
-        let dadosProdutosJSON = {}
-
-        let dadosProduto = await produtosDAO.mdlSelectProdutoByIdLojista(idLojista)
-
-        if (dadosProduto) {
-            let arrayResponse = []
-            let jsonItem = []
-
-            for (let index = 0; index < dadosProduto.length; index++) {
-                let produto = {
-                    id: dadosProduto[index].id,
-                    nome: dadosProduto[index].nome_produto,
-                    descricao: dadosProduto[index].descricao_produto,
-                    peso: dadosProduto[index].peso_produto,
-                    cupom: dadosProduto[index].cupom_produto,
-                    url: dadosProduto[index].url_produto,
-                    status: dadosProduto[index].status_produto
-                }
-
-                let lojista = {
-                    id: dadosProduto[index].id_lojista,
-                    nome: dadosProduto[index].nome_lojista,
-                    email: dadosProduto[index].email_lojista
-                }
-
-                jsonItem = {
-                    produto: produto,
-                    lojista: lojista
-                }
-                arrayResponse.push(jsonItem)
-            }
-
-            //Criando um JSON com o atributo aluno, para encaminhar um array de produtos
-            dadosProdutosJSON = {
-                status: message.SUCCESS_REQUEST.status,
-                message: message.SUCCESS_REQUEST.message,
-                item: arrayResponse
-            }
-            return dadosProdutosJSON
-        } else {
-            return message.ERROR_REGISTER_NOT_FOUND;
-        }
-    }
-}
-
 module.exports = {
     getProdutos,
     getProdutoPeloId,
-    getProdutoPeloIdLojista
 }

@@ -68,19 +68,10 @@ var controllerProduto = require('./controller/controller_produto.js')
 
 //EndPoint: Retorna todos os dados de produtos ou pelo id do lojista por query
 app.get('/v1/avicultura-silsan/produto', cors(), async function (request, response) {
-    let idLojista = request.query.idLojista
+    let dadosProduto = await controllerProduto.getProdutos()
 
-    if (idLojista) {
-        let dadosProduto = await controllerProduto.getProdutoPeloIdLojista(idLojista)
-
-        response.status(dadosProduto.status)
-        response.json(dadosProduto)
-    } else {
-        let dadosProduto = await controllerProduto.getProdutos()
-
-        response.status(dadosProduto.status)
-        response.json(dadosProduto)
-    }
+    response.status(dadosProduto.status)
+    response.json(dadosProduto)
 })
 
 //EndPoint: Retorna o produto filtrando pelo ID
