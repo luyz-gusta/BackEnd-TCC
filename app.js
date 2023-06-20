@@ -43,13 +43,6 @@ app.use((request, response, next) => {
 
 //CRUD (Create, Read, Update e Delete)
 
-/*****************************************************************************************************************
-* Objetivo: API de controle de PRODUTOS
-* Data: 19/06/2023
-* Autor: Luiz Gustavo
-* Versão: 1.0
-******************************************************************************************************************/
-
 /*
 Instalação do PRISMA no projeto (biblioteca para conexão com Banco de Dados)
     npm install prisma --save
@@ -60,8 +53,258 @@ Instalação do PRISMA no projeto (biblioteca para conexão com Banco de Dados)
     npx prisma migrate dev  ###Serve para realizar o sincronismo entre o prisma e o Banco de Dados
 */
 
+/*****************************************************************************************************************
+* Objetivo: API de controle de STATUS DE USUARIO
+* Data: 20/06/2023
+* Autor: Luiz e Gustavo
+* Versão: 1.0
+******************************************************************************************************************/
+
 //Define que os dados que irão chegar no body da requisição será no padrao JSON
 const bodyParserJson = bodyParser.json();
+
+//Import do arquivo da controller que irá solicitar a model os dados do BD
+var controllerStatusUsuario = require('./controller/controller_status-usuario.js')
+
+//EndPoint: Retorna todos os dados de status de usuario
+app.get('/v1/avicultura-silsan/status-usuario', cors(), async function (request, response) {
+
+    //Recebe os dados da controller do status de usuario    
+    let dadosStatusUsuario = await controllerStatusUsuario.ctlGetStatusUsuario();
+
+    response.status(dadosStatusUsuario.status);
+    response.json(dadosStatusUsuario);
+})
+
+//EndPoint: Retorna o status de usuario filtrando pelo ID
+app.get('/v1/avicultura-silsan/status-usuario/:id', cors(), async function (request, response) {
+
+    let idStatus = request.params.id;
+
+    //Recebe os dados da controller do status de usuario    
+    let dadosStatusUsuario = await controllerStatusUsuario.ctlGetBuscarStatusUsuarioID(idStatus);
+
+    response.status(dadosStatusUsuario.status);
+    response.json(dadosStatusUsuario);
+})
+
+//EndPoint: Insere um dado novo 
+app.post('/v1/avicultura-silsan/status-usuario', cors(), bodyParserJson, async function (request, response) {
+
+    //Recebe o content-type da requisição
+    let contentType = request.headers['content-type'];
+
+    if (String(contentType).toLowerCase() == 'application/json') {
+
+        //Recebe os dados encaminhados na requisição
+        let dadosBody = request.body;
+
+        let resultDadosStatusUsuario = await controllerStatusUsuario.ctlInsertStatusUsuario(dadosBody)
+
+        response.status(resultDadosStatusUsuario.status)
+        response.json(resultDadosStatusUsuario)
+    } else {
+        response.status(message.ERROR_INVALID_CONTENT_TYPE.status);
+        response.json(message.ERROR_INVALID_CONTENT_TYPE);
+    }
+})
+
+//EndPoint: Atualiza um status de usuario existente, filtrando pelo ID
+app.put('/v1/avicultura-silsan/status-usuario/:id', cors(), bodyParserJson, async function (request, response) {
+
+    //Recebe o content-type da requisição
+    let contentType = request.headers['content-type'];
+
+    //Validação para receber dados apenas no formato JSON
+    if (String(contentType).toLowerCase() == 'application/json') {
+        //Recebe o ID do aluno pelo parametro
+        let idStatus = request.params.id;
+
+        //Recebe os dados encaminhados no corpo da requisição
+        let dadosBody = request.body;
+
+        //Encaminha os dados para a controller
+        let resultDadosStatusUsuario = await controllerStatusUsuario.ctlAtualizarStatusUsuarioID(dadosBody, idStatus);
+
+        response.status(resultDadosStatusUsuario.status);
+        response.json(resultDadosStatusUsuario);
+    } else {
+        response.status(message.ERROR_INVALID_CONTENT_TYPE.status);
+        response.json(message.ERROR_INVALID_CONTENT_TYPE);
+    }
+})
+
+//EndPoint: Exclui um status de usuario, filtrando pelo ID
+app.delete('/v1/avicultura-silsan/status-usuario/:id', cors(), async function (request, response) {
+
+    // Recebe o ID do status de usuario pelo parametro
+    let idStatus = request.params.id
+
+    // Encaminha os dados para a controller
+    let resultDadosStatusUsuario = await controllerStatusUsuario.ctlDeletarStatusUsuario(idStatus)
+
+    if (resultDadosStatusUsuario.length != 0) {
+        response.status(resultDadosStatusUsuario.status)
+        response.json(resultDadosStatusUsuario)
+    } else {
+        message.ERROR_INVALID_ID
+    }
+})
+
+/*****************************************************************************************************************
+* Objetivo: API de controle de USUARIO
+* Data: 20/06/2023
+* Autor: Luiz Gustavo
+* Versão: 1.0
+******************************************************************************************************************/
+
+var controllerUsuario = require('./controller/controller_usuario.js')
+
+//EndPoint: Retorna todos os dados de usuario
+app.get('/v1/avicultura-silsan/usuario', cors(), async function (request, response) {
+    let idStatusUsuario = request.query.idStatusUsuario
+
+    if (idStatusUsuario != undefined) {
+        let dadosUsuariosJSON = await controllerUsuario.ctlGetUsuarioIdStatusUsuario(idStatusUsuario)
+
+        response.status(dadosUsuariosJSON.status)
+        response.json(dadosUsuariosJSON)
+    } else {
+        let dadosUsuario = await controllerUsuario.ctlGetUsuarios()
+
+        response.status(dadosUsuario.status)
+        response.json(dadosUsuario)
+    }
+})
+
+//EndPoint: Retorna o usuario filtrando pelo ID
+app.get('/v1/avicultura-silsan/usuario/:id', cors(), async function (request, response) {
+    let idUsuario = request.params.id
+
+    let dadosUsuariosJSON = await controllerUsuario.ctlGetUsuarioID(idUsuario)
+
+    response.status(dadosUsuariosJSON.status)
+    response.json(dadosUsuariosJSON)
+})
+
+//EndPoint: Retorna o usuario filtrando pelo Email e Senha
+app.get('/v1/avicultura-silsan/usuario/email/senha/:email', cors(), async function (request, response) {
+    let emailUsuario = request.params.email
+
+    let senhaUsuario = request.query.senha
+
+    let dadosUsuariosJSON = await controllerUsuario.ctlGetUsuarioEmailSenha(emailUsuario, senhaUsuario)
+
+    response.status(dadosUsuariosJSON.status)
+    response.json(dadosUsuariosJSON)
+})
+
+//EndPoint: Retorna o usuario filtrando pelo Email
+app.get('/v1/avicultura-silsan/usuario-email', cors(), async function (request, response) {
+    let dadosUsuariosJSON = await controllerUsuario.ctlGetEmailUsuario()
+
+    response.status(dadosUsuariosJSON.status)
+    response.json(dadosUsuariosJSON)
+})
+
+//EndPoint: Retorna o usuario filtrando pelo Email
+app.get('/v1/avicultura-silsan/usuario-email/:email', cors(), async function (request, response) {
+    let emailUsuario = request.params.email
+
+    let dadosUsuariosJSON = await controllerUsuario.ctlGetUsuarioEmail(emailUsuario)
+
+    response.status(dadosUsuariosJSON.status)
+    response.json(dadosUsuariosJSON)
+})
+
+//EndPoint: Retorna o usuario filtrando pelo nivel
+app.get('/v1/avicultura-silsan/usuario/nivel/:nivel', cors(), async function (request, response) {
+    let nivelUsuario = request.params.nivel
+
+    let dadosUsuariosJSON = await controllerUsuario.ctlGetUsuarioNivel(nivelUsuario)
+
+    response.status(dadosUsuariosJSON.status)
+    response.json(dadosUsuariosJSON)
+})
+
+//EndPoint: Insere um dado novo 
+app.post('/v1/avicultura-silsan/usuario', cors(), bodyParserJson, async function (request, response) {
+
+    //Recebe o content-type da requisição
+    let contentType = request.headers['content-type']
+
+    //Validação para receber dados apenas no formato JSON
+    if (String(contentType).toLowerCase() == 'application/json') {
+        //Recebe os dados encaminhados na requisição
+        let dadosBody = request.body
+
+        let resultDadosUsuario = await controllerUsuario.ctlInserirUsuario(dadosBody)
+
+        response.status(resultDadosUsuario.status)
+        response.json(resultDadosUsuario)
+    } else {
+        response.status(message.ERROR_INVALID_CONTENT_TYPE.status)
+        response.json(message.ERROR_INVALID_CONTENT_TYPE)
+    }
+})
+
+//EndPoint: Atualiza um usuario existente, filtrando pelo ID
+app.put('/v1/avicultura-silsan/usuario/:id', cors(), bodyParserJson, async function (request, response) {
+    //Recebe o content-type da requisição
+    let contentType = request.headers['content-type']
+
+    //Validação para receber dados apenas no formato JSON
+    if (String(contentType).toLowerCase() == 'application/json') {
+        //Recebe o ID do aluno pelo parametro
+        let idUsuario = request.params.id;
+
+        //Recebe os dados dos aluno encaminhado no corpo da requisição
+        let dadosBody = request.body
+
+        let resultDadosAlunos = await controllerUsuario.ctlAtualizarUsuario(dadosBody, idUsuario)
+
+        response.status(resultDadosAlunos.status)
+        response.json(resultDadosAlunos)
+    } else {
+        response.status(message.ERROR_INVALID_CONTENT_TYPE.status)
+        response.json(message.ERROR_INVALID_CONTENT_TYPE)
+    }
+})
+
+//EndPoint: Exclui um usuario, filtrando pelo ID
+app.delete('/v1/avicultura-silsan/usuario/:id', cors(), async function (request, response) {
+    let idUsuario = request.params.id;
+
+    let resultDadosUsuario = await controllerUsuario.ctlExcluirUsuario(idUsuario)
+
+    response.status(resultDadosUsuario.status)
+    response.json(resultDadosUsuario)
+})
+
+/*****************************************************************************************************************
+* Objetivo: API de controle de CLIENTES
+* Data: 20/06/2023
+* Autor: Luiz Gustavo
+* Versão: 1.0
+******************************************************************************************************************/
+
+//Import do araquivo da controler que irá solicitar a model os do BD
+var controllerCliente = require('./controller/controller_cliente.js')
+
+//EndPoint: Retorna todos os dados dos clientes
+app.get('/v1/avicultura-silsan/cliente', cors(), async function (request, response) {
+    let dadosClientes = await controllerCliente.ctlGetClientes()
+
+    response.status(dadosClientes.status)
+    response.json(dadosClientes)
+})
+
+/*****************************************************************************************************************
+* Objetivo: API de controle de PRODUTOS
+* Data: 19/06/2023
+* Autor: Luiz Gustavo
+* Versão: 1.0
+******************************************************************************************************************/
 
 //Import do araquivo da controler que irá solicitar a model os do BD
 var controllerProduto = require('./controller/controller_produto.js')

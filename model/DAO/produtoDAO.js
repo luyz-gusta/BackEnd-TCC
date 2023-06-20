@@ -109,6 +109,5 @@ const mdlInsertProduto = async (dadosProduto) => {
 module.exports = {
     mdlSelectAllProdutos,
     mdlSelectProdutoById,
-    mdlSelectProdutoByIdLojista,
     mdlInsertProduto
 }

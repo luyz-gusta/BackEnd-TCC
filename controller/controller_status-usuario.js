@@ -31,7 +31,7 @@ const ctlGetStatusUsuario = async function () {
         dadosStatusUsuarioJSON.status = message.SUCCESS_REQUEST.status;
         dadosStatusUsuarioJSON.message = message.SUCCESS_REQUEST.message;
         dadosStatusUsuarioJSON.quantidade = dadosStatusUsuario.length;
-        dadosStatusUsuarioJSON.status_de_usuario = dadosStatusUsuario
+        dadosStatusUsuarioJSON.status_usuario = dadosStatusUsuario
         return dadosStatusUsuarioJSON
     } else {
         return message.ERROR_REGISTER_NOT_FOUND;
@@ -55,7 +55,7 @@ const ctlGetBuscarStatusUsuarioID = async function (id) {
             //Criando um JSON com o atributo aluno, para encaminhar um array de alunos
             dadosStatusUsuarioJSON.status = message.SUCCESS_REQUEST.status;
             dadosStatusUsuarioJSON.message = message.SUCCESS_REQUEST.message;
-            dadosStatusUsuarioJSON.status_de_usuario = dadosStatusUsuario
+            dadosStatusUsuarioJSON.status_usuario = dadosStatusUsuario
             return dadosStatusUsuarioJSON
         } else {
             return message.ERROR_REGISTER_NOT_FOUND;
@@ -111,7 +111,8 @@ const ctlAtualizarStatusUsuarioID = async function (dadosStatus, idStatus) {
                 let dadosStatusUsuarioJSON = {};
                 dadosStatusUsuarioJSON.status = message.SUCCESS_UPDATED_ITEM.status;
                 dadosStatusUsuarioJSON.message = message.SUCCESS_UPDATED_ITEM.message;
-                dadosStatusUsuarioJSON.aluno = dadosStatus;
+                dadosStatusUsuarioJSON.status_usuario_antigo = statusID[0];
+                dadosStatusUsuarioJSON.status_usuario_novo = dadosStatus;
 
                 return dadosStatusUsuarioJSON
             } else {

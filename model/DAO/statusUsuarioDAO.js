@@ -1,7 +1,7 @@
 /**************************************************************************************
  *  Objetivo: Responsavel pela manipulação de dados dos STATUS_USUARIO no banco de dados
- *  Autor: Muryllo e Luiz
- *  Data: 22/05/2023
+ *  Autor: Luiz
+ *  Data: 20/06/2023
  *  Versão: 1.0
  **************************************************************************************/
 
@@ -40,29 +40,10 @@ const mdlselectAllStatusUsuario = async function () {
 const mdlSelectStatusUsuarioById = async function (id) {
 
     //Script para buscar um status de usuario filtrando pelo ID
-    let sql = `select * from tbL_status_usuario where id = ${id}`;
+    let sql = `select * from tbl_status_usuario where id = ${id}`;
 
     let rsStatusUsuario = await prisma.$queryRawUnsafe(sql)
 
-    //Valida de o Banco de Dados retornou algum registro
-    if (rsStatusUsuario.length > 0) {
-        return rsStatusUsuario
-    } else {
-        return false;
-    }
-}
-
-//Retornar um status de usuario filtrando pelo Nome
-const mdlSelectStatusUsuarioByName = async function (nome) {
-
-    //Script para buscar um status de usuario filtrando pelo ID
-    let sql = `select * from tbL_status_usuario where nivel = '${nome}';`;
-    console.log(sql);
-
-    let rsStatusUsuario = await prisma.$queryRawUnsafe(sql)
-    console.log(rsStatusUsuario);
-
-    console.log(rsStatusUsuario);
     //Valida de o Banco de Dados retornou algum registro
     if (rsStatusUsuario.length > 0) {
         return rsStatusUsuario
@@ -75,7 +56,7 @@ const mdlSelectStatusUsuarioByName = async function (nome) {
 const mdlInsertStatusUsuario = async function (dadosStatus) {
 
     //ScriptSQL para inserir os dados
-    let sql = `insert into tbL_status_usuario(
+    let sql = `insert into tbl_status_usuario(
                                         nivel
                                         )values(
                                         '${dadosStatus.nivel}'
@@ -84,7 +65,6 @@ const mdlInsertStatusUsuario = async function (dadosStatus) {
     //Executa o scriptSQL no banco de dados
     let resultStatus = await prisma.$executeRawUnsafe(sql);
 
-    console.log(resultStatus);
     if (resultStatus) {
         return true
     } else {
@@ -140,7 +120,6 @@ module.exports = {
     mdlselectAllStatusUsuario,
     mdlInsertStatusUsuario,
     mdlSelectStatusUsuarioById,
-    mdlSelectStatusUsuarioByName,
     mdlSelectLastId,
     mdlUpdateStatusUsuarioID,
     mdlDeleteStatusUsuarioID,

@@ -1,15 +1,19 @@
 /************************************************************************************************
  * Objetivo: Responsável pea manipulação de dados dos USUARIO no Banco de Dados
- * Autor: Luiz Gustavo e Muryllo Vieira
- * Data: 22/05/2023
+ * Autor: Luiz Gustavo
+ * Data: 20/06/2023
  * Versão: 1.0
 ************************************************************************************************/
 
 /**
     //$queryRawUnsafe( ) -> Permite interpretar uma variavel como sendo um scriptSQL
     //$queryRaw( ) -> Esse executa o comando dentro de aspas e não podendo interpretar uma variavel
+ */
 
-
+/**
+ * Métodos com inicio 'ctl' são funções da controller
+ * e
+ * Métodos com inicio 'mdl' são funções da model
  */
 
 //Import da biblioteca do prisma client
@@ -19,9 +23,15 @@ var { PrismaClient } = require('@prisma/client')
 var prisma = new PrismaClient()
 
 const mdlSelectAllUsuarios = async () => {
-    let sql = `select usuario.id, usuario.email, 
-    usuario.senha,status.id as id_status,status.nivel from 
-    tbl_usuario as usuario inner join tbl_status_usuario as status on usuario.id_status_usuario = status.id order by id asc;`
+    let sql = `
+    select usuario.id,
+        usuario.email, 
+        usuario.senha,
+        usuario.id_status_usuario, 
+        status_usuario.nivel 
+    from tbl_usuario as usuario 
+        inner join tbl_status_usuario as status_usuario 
+            on usuario.id_status_usuario = status_usuario.id order by usuario.id asc;`
 
     let rsUsuario = await prisma.$queryRawUnsafe(sql)
 
@@ -33,9 +43,14 @@ const mdlSelectAllUsuarios = async () => {
 }
 
 const mdlSelectUsuarioByID = async (id) => {
-    let sql = `select usuario.id, usuario.email, usuario.senha, status.id as id_status, status.nivel 
-    from tbl_usuario as usuario inner join tbl_status_usuario as status 
-    on usuario.id_status_usuario = status.id where usuario.id = ${id};`
+    let sql = `select usuario.id,
+        usuario.email, 
+        usuario.senha,
+        usuario.id_status_usuario, 
+        status_usuario.nivel 
+    from tbl_usuario as usuario 
+        inner join tbl_status_usuario as status_usuario 
+            on usuario.id_status_usuario = status_usuario.id where usuario.id = ${id};`
 
     let rsUsuario = await prisma.$queryRawUnsafe(sql)
 
@@ -47,9 +62,33 @@ const mdlSelectUsuarioByID = async (id) => {
 }
 
 const mdlSelectUsuarioByEmail = async (email) => {
-    let sql = `select usuario.id, usuario.email, usuario.senha, 
-    status.id as id_status, status.nivel from tbl_usuario as usuario inner join tbl_status_usuario 
-    as status on usuario.id_status_usuario = status.id where usuario.email = '${email}';
+    let sql = `select usuario.id,
+    usuario.email, 
+    usuario.senha,
+    usuario.id_status_usuario, 
+    status_usuario.nivel 
+from tbl_usuario as usuario 
+    inner join tbl_status_usuario as status_usuario 
+        on usuario.id_status_usuario = status_usuario.id where usuario.email = '${email}';
+    `
+
+    let rsUsuario = await prisma.$queryRawUnsafe(sql)
+
+    if(rsUsuario.length > 0){
+        return rsUsuario
+    }else{
+        return false
+    }
+}
+
+const mdlSelectAllEmailUsuario = async () => {
+    let sql = `select usuario.id,
+        usuario.email, 
+        usuario.id_status_usuario, 
+        status_usuario.nivel 
+    from tbl_usuario as usuario 
+        inner join tbl_status_usuario as status_usuario 
+            on usuario.id_status_usuario = status_usuario.id;
     `
 
     let rsUsuario = await prisma.$queryRawUnsafe(sql)
@@ -62,9 +101,34 @@ const mdlSelectUsuarioByEmail = async (email) => {
 }
 
 const mdlSelectUsuarioByEmailAndSenha = async (email, senha) => {
-    let sql = `select usuario.id, usuario.email, usuario.senha, 
-    status.id as id_status, status.nivel from tbl_usuario as usuario inner join tbl_status_usuario 
-    as status on usuario.id_status_usuario = status.id where usuario.email = '${email}' and usuario.senha = '${senha}';
+    let sql = `select usuario.id,
+        usuario.email, 
+        usuario.senha,
+        usuario.id_status_usuario, 
+        status_usuario.nivel 
+    from tbl_usuario as usuario 
+        inner join tbl_status_usuario as status_usuario 
+            on usuario.id_status_usuario = status_usuario.id where usuario.email = '${email}' and usuario.senha = '${senha}';
+    `
+
+    let rsUsuario = await prisma.$queryRawUnsafe(sql)
+
+    if(rsUsuario.length > 0){
+        return rsUsuario
+    }else{
+        return false
+    }
+}
+
+const mdlSelectUsuarioByIdStatusUsuario = async (idStatusUsuario) => {
+    let sql = `select usuario.id,
+        usuario.email, 
+        usuario.senha,
+        usuario.id_status_usuario, 
+        status_usuario.nivel 
+    from tbl_usuario as usuario 
+        inner join tbl_status_usuario as status_usuario 
+            on usuario.id_status_usuario = status_usuario.id where usuario.id_status_usuario = ${idStatusUsuario};
     `
 
     let rsUsuario = await prisma.$queryRawUnsafe(sql)
@@ -77,9 +141,14 @@ const mdlSelectUsuarioByEmailAndSenha = async (email, senha) => {
 }
 
 const mdlSelectUsuarioByNivel = async (nivel) => {
-    let sql = `select usuario.id, usuario.email, usuario.senha, 
-    status.id as id_status, status.nivel from tbl_usuario as usuario inner join tbl_status_usuario 
-    as status on usuario.id_status_usuario = status.id where status.nivel = '${nivel}';
+    let sql = `select usuario.id,
+        usuario.email, 
+        usuario.senha,
+        usuario.id_status_usuario, 
+        status_usuario.nivel 
+    from tbl_usuario as usuario 
+        inner join tbl_status_usuario as status_usuario 
+            on usuario.id_status_usuario = status_usuario.id where status_usuario.nivel = ${nivel};'
     `
 
     let rsUsuario = await prisma.$queryRawUnsafe(sql)
@@ -93,13 +162,14 @@ const mdlSelectUsuarioByNivel = async (nivel) => {
 
 //Retorno o ultimo id inserido no banco de dados
 const mdlSelectLastByID = async () => {
-    let sql = `select usuario.id, 
-    usuario.email, usuario.senha,
-    status.id as id_status,status.nivel,
-    usuario.id_status_usuario
+    let sql = `select usuario.id,
+        usuario.email, 
+        usuario.senha,
+        usuario.id_status_usuario, 
+        status_usuario.nivel 
     from tbl_usuario as usuario 
-    inner join tbl_status_usuario as status on 
-    usuario.id_status_usuario = status.id order by id desc limit 1;
+        inner join tbl_status_usuario as status_usuario 
+            on usuario.id_status_usuario = status_usuario.id order by id desc limit 1;
     `
 
     let rsAluno = await prisma.$queryRawUnsafe(sql)
@@ -170,6 +240,8 @@ module.exports = {
     mdlSelectUsuarioByEmailAndSenha,
     mdlSelectUsuarioByNivel,
     mdlSelectLastByID,
+    mdlSelectUsuarioByIdStatusUsuario,
+    mdlSelectAllEmailUsuario,
     mdlInsertUsuario,
     mdlUpdateUsuario,
     mdlDeleteUsuario

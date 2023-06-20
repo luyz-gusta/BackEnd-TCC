@@ -1,7 +1,7 @@
 /************************************************************************************************
  * Objetivo: Responsável pela regra de negócio referente ao CRUD de USUARIOS
  * Autor: Luiz Gustavo
- * Data: 19/06/2023
+ * Data: 20/06/2023
  * Versão: 1.0
 ************************************************************************************************/
 
@@ -12,8 +12,8 @@
 **********************************************************/
 
 var message = require('./modulo/config.js')
-
-let usuarioDao = require('../model/DAO/usuarioDAO.js')
+var usuarioDao = require('../model/DAO/usuarioDAO.js')
+var statusUsuarioDAO = require('../model/DAO/statusUsuarioDAO.js')
 
 //Retorna todos os usuarios
 const ctlGetUsuarios = async () => {
@@ -54,14 +54,31 @@ const ctlGetUsuarioID = async (id) => {
             return message.ERROR_REGISTER_NOT_FOUND
         }
     }
+}
 
+const ctlGetEmailUsuario = async () => {
+    let dadosUsuariosJSON = {}
+
+    //Chama a função do arquivo DAO que irá retornar todos os resgistros do DB
+    let dadosUsuario = await usuarioDao.mdlSelectAllEmailUsuario()
+
+    if (dadosUsuario) {
+        dadosUsuariosJSON = {
+            status: message.SUCCESS_REQUEST.status,
+            message: message.SUCCESS_REQUEST.message,
+            quantidade: dadosUsuario.length,
+            usuarios: dadosUsuario
+        }
+        return dadosUsuariosJSON
+    } else {
+        return message.ERROR_REGISTER_NOT_FOUND
+    }
 }
 
 const ctlGetUsuarioEmail = async (email) => {
     let dadosUsuariosJSON = {}
 
     if (email == '' || email == null || email == undefined || email.length > 255) {
-        console.log('teste erro');
         return message.ERROR_INVALID_EMAIL
     } else {
         let dadosUsuario = await usuarioDao.mdlSelectUsuarioByEmail(email)
@@ -79,6 +96,33 @@ const ctlGetUsuarioEmail = async (email) => {
     }
 }
 
+const ctlGetUsuarioIdStatusUsuario = async (idStatusUsuario) => {
+    let dadosUsuariosJSON = {}
+
+    if (idStatusUsuario == '' || idStatusUsuario == null || idStatusUsuario == undefined || isNaN(idStatusUsuario)) {
+        return message.ERROR_INVALID_PARAMS
+    } else {
+        let verificacaoIdStatusUsuario = await statusUsuarioDAO.mdlSelectStatusUsuarioById(idStatusUsuario)
+
+        if (verificacaoIdStatusUsuario) {
+            let dadosUsuario = await usuarioDao.mdlSelectUsuarioByIdStatusUsuario(idStatusUsuario)
+
+            if (dadosUsuario) {
+                dadosUsuariosJSON = {
+                    status: message.SUCCESS_REQUEST.status,
+                    message: message.SUCCESS_REQUEST.message,
+                    usuarios: dadosUsuario
+                }
+                return dadosUsuariosJSON
+            } else {
+                return message.ERROR_REGISTER_NOT_FOUND
+            }
+        }else{
+            return message.ERROR_INVALID_ID
+        }
+    }
+}
+
 const ctlGetUsuarioEmailSenha = async (email, senha) => {
     let dadosUsuariosJSON = {}
 
@@ -91,11 +135,11 @@ const ctlGetUsuarioEmailSenha = async (email, senha) => {
             let dadosUsuario = await usuarioDao.mdlSelectUsuarioByEmailAndSenha(email, senha)
 
             if (dadosUsuario) {
-                
-                if(dadosUsuario[0].nivel == 'Professor'){
+
+                if (dadosUsuario[0].nivel == 'Lojista') {
                     let pegarProfessor = await controllerProfessor.ctlGetBuscarProfessorIdUsuario(dadosUsuario[0].id)
 
-                    if(pegarProfessor){
+                    if (pegarProfessor) {
                         dadosUsuariosJSON = {
                             status: message.SUCCESS_REQUEST.status,
                             message: message.SUCCESS_REQUEST.message,
@@ -107,13 +151,13 @@ const ctlGetUsuarioEmailSenha = async (email, senha) => {
                             }
                         }
                         return dadosUsuariosJSON
-                    }else{
+                    } else {
                         return message.ERROR_INVALID_ID
                     }
-                }else if(dadosUsuario[0].nivel == 'Aluno'){
+                } else if (dadosUsuario[0].nivel == 'Clinete') {
                     let pegarAluno = await controllerAluno.ctlGetBuscarAlunoIdUsuario(dadosUsuario[0].id)
 
-                    if(pegarAluno){
+                    if (pegarAluno) {
                         dadosUsuariosJSON = {
                             status: message.SUCCESS_REQUEST.status,
                             message: message.SUCCESS_REQUEST.message,
@@ -124,10 +168,10 @@ const ctlGetUsuarioEmailSenha = async (email, senha) => {
                             }
                         }
                         return dadosUsuariosJSON
-                    }else{
+                    } else {
                         return message.ERROR_INVALID_ID
                     }
-                }else{
+                } else {
                     dadosUsuariosJSON = {
                         status: message.SUCCESS_REQUEST.status,
                         message: message.SUCCESS_REQUEST.message,
@@ -242,6 +286,8 @@ module.exports = {
     ctlGetUsuarioID,
     ctlGetUsuarioEmail,
     ctlGetUsuarioEmailSenha,
+    ctlGetUsuarioIdStatusUsuario,
+    ctlGetEmailUsuario,
     ctlInserirUsuario,
     ctlAtualizarUsuario,
     ctlExcluirUsuario
