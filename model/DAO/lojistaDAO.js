@@ -1,5 +1,5 @@
 /************************************************************************************************
- * Objetivo: Responsável pela regra de negócio referente ao CRUD de CLIENTE
+ * Objetivo: Responsável pela regra de negócio referente ao CRUD de LOJISTA
  * Autor: Luiz Gustavo
  * Data: 20/06/2023
  * Versão: 1.0
@@ -17,26 +17,25 @@ var { PrismaClient } = require('@prisma/client')
 //Instancia da Classe PrismaClient 
 var prisma = new PrismaClient()
 
-const mdlSelectAllClientes = async () => {
+const mdlSelectAllLojista = async () => {
     let sql = `
     select 
-	    cliente.id as id_cliente,
-        cliente.nome,
-        cliente.telefone,
-        date_format(cliente.data_nascimento, '%Y-%m-%d') as data_nascimento,  
-        cliente.id_usuario,
+	    lojista.id as id_lojista,
+        lojista.nome,
+        lojista.telefone,
+        lojista.id_usuario,
         usuario.email,
         status_usuario.nivel
-    from tbl_cliente as cliente
+    from tbl_lojista as lojista
     	inner join tbl_usuario as usuario 
-		    on cliente.id_usuario = usuario.id
+	    	on lojista.id_usuario = usuario.id
 	    inner join tbl_status_usuario as status_usuario 
 			on usuario.id_status_usuario = status_usuario.id;`
 
-    let rsCliente = await prisma.$queryRawUnsafe(sql)
+    let rsLojista = await prisma.$queryRawUnsafe(sql)
 
-    if(rsCliente.length > 0){
-        return rsCliente
+    if(rsLojista.length > 0){
+        return rsLojista
     }else{
         return false
     }
@@ -95,33 +94,8 @@ const mdlSelectLastId = async function (){
     }
 }
 
-const mdlInsertCliente = async (dadosCliente) => {
-    let sql = `
-    insert into tbl_cliente(
-        nome, 
-        telefone, 
-        data_nascimento, 
-        id_usuario
-    ) values (
-        '${dadosCliente.nome}',
-        '${dadosCliente.telefone}',
-        '${dadosCliente.data_nascimento}',
-        ${dadosCliente.id_usuario}
-    );
-    `
 
-    let resultStatus = await prisma.$executeRawUnsafe(sql)
-
-    if(resultStatus){
-        return resultStatus
-    }else{
-        return false
-    }
-}
 
 module.exports = {
-   mdlSelectAllClientes,
-   mdlSelectClienteByID,
-   mdlSelectLastId,
-   mdlInsertCliente
+   mdlSelectAllLojista
 }

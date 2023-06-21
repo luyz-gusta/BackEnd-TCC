@@ -116,6 +116,26 @@ insert into tbl_cliente(
     5
 );
 
+#Lojista
+insert into tbl_lojista(
+	nome, 
+    telefone, 
+    id_usuario
+) values (
+	'Vitor Straioto',
+    '11912345678',
+    2
+);
+insert into tbl_lojista(
+	nome, 
+    telefone, 
+    id_usuario
+) values (
+	'Bernardo Santos',
+    '11987654321',
+    3
+);
+
 -- ----------------------------- SELECTS ----------------------------- --
 #StatusUsuario
 select * from tbl_status_usuario;
@@ -147,8 +167,26 @@ from tbl_cliente as cliente
 	inner join tbl_status_usuario as status_usuario 
 			on usuario.id_status_usuario = status_usuario.id;
             
+#Lojista
+select *from tbl_lojista;
+select 
+	lojista.id as id_lojista,
+    lojista.nome,
+    lojista.telefone,
+    lojista.id_usuario,
+    usuario.email,
+    status_usuario.nivel
+from tbl_lojista as lojista
+	inner join tbl_usuario as usuario 
+		on lojista.id_usuario = usuario.id
+	inner join tbl_status_usuario as status_usuario 
+			on usuario.id_status_usuario = status_usuario.id;
             
             
             
             
+            
+
+
+
 

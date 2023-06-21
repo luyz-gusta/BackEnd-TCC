@@ -299,6 +299,56 @@ app.get('/v1/avicultura-silsan/cliente', cors(), async function (request, respon
     response.json(dadosClientes)
 })
 
+//EndPoint: Retorna o cliente pelo id
+app.get('/v1/avicultura-silsan/cliente/:id', cors(), async function (request, response) {
+    let idCliente = request.params.id
+    
+    let dadosClientes = await controllerCliente.ctlGetClienteID(idCliente)
+
+    response.status(dadosClientes.status)
+    response.json(dadosClientes)
+})
+
+//EndPoint: Insere um novo cliente
+app.post('/v1/avicultura-silsan/cliente', cors(), bodyParserJson, async function (request, response) {
+
+    //Recebe o content-type da requisição
+    let contentType = request.headers['content-type']
+
+    //Validação para receber dados apenas no formato JSON
+    if (String(contentType).toLowerCase() == 'application/json') {
+        //Recebe os dados encaminhados na requisição
+        let dadosBody = request.body
+
+        let resultDadosCliente = await controllerCliente.ctlInserirCliente(dadosBody)
+
+        response.status(resultDadosCliente.status)
+        response.json(resultDadosCliente)
+    } else {
+        response.status(message.ERROR_INVALID_CONTENT_TYPE.status)
+        response.json(message.ERROR_INVALID_CONTENT_TYPE)
+    }
+})
+
+/*****************************************************************************************************************
+* Objetivo: API de controle de LOJISTAS
+* Data: 20/06/2023
+* Autor: Luiz Gustavo
+* Versão: 1.0
+******************************************************************************************************************/
+
+//Import do araquivo da controler que irá solicitar a model os do BD
+var controllerLojsita = require('./controller/controller_lojista.js')
+
+//EndPoint: Retorna todos os dados dos clientes
+app.get('/v1/avicultura-silsan/lojista', cors(), async function (request, response) {
+    let dadosLojistas = await controllerLojsita.ctlGetLojistas()
+
+    response.status(dadosLojistas.status)
+    response.json(dadosLojistas)
+})
+
+
 /*****************************************************************************************************************
 * Objetivo: API de controle de PRODUTOS
 * Data: 19/06/2023
