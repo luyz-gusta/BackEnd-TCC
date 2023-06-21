@@ -34,68 +34,68 @@ const mdlSelectAllLojista = async () => {
 
     let rsLojista = await prisma.$queryRawUnsafe(sql)
 
-    if(rsLojista.length > 0){
+    if (rsLojista.length > 0) {
         return rsLojista
-    }else{
+    } else {
         return false
     }
 }
 
-const mdlSelectClienteByID = async (id) => {
+const mdlSelectLojistaId = async (id) => {
     let sql = `
     select 
-	    cliente.id as id_cliente,
-        cliente.nome,
-        cliente.telefone,
-        date_format(cliente.data_nascimento, '%Y-%m-%d') as data_nascimento,  
-        cliente.id_usuario,
+	    lojista.id as id_lojista,
+        lojista.nome,
+        lojista.telefone,
+        lojista.id_usuario,
         usuario.email,
         status_usuario.nivel
-    from tbl_cliente as cliente
+    from tbl_lojista as lojista
     	inner join tbl_usuario as usuario 
-		    on cliente.id_usuario = usuario.id
+	    	on lojista.id_usuario = usuario.id
 	    inner join tbl_status_usuario as status_usuario 
 			on usuario.id_status_usuario = status_usuario.id
-    where cliente.id = ${id};`
+    where lojista.id = ${id} ;`
 
-    let rsCliente = await prisma.$queryRawUnsafe(sql)
+    let rsLojista = await prisma.$queryRawUnsafe(sql)
 
-    if(rsCliente.length > 0){
-        return rsCliente
-    }else{
+    if (rsLojista.length > 0) {
+        return rsLojista
+    } else {
         return false
     }
 }
 
 //Retorna o ultimo id inserido no BD
-const mdlSelectLastId = async function (){
+const mdlSelectLastId = async function () {
 
     let sql = `
     select 
-	    cliente.id as id_cliente,
-        cliente.nome,
-        cliente.telefone,
-        date_format(cliente.data_nascimento, '%Y-%m-%d') as data_nascimento,  
-        cliente.id_usuario,
+	    lojista.id as id_lojista,
+        lojista.nome,
+        lojista.telefone,
+        lojista.id_usuario,
         usuario.email,
         status_usuario.nivel
-    from tbl_cliente as cliente
+    from tbl_lojista as lojista
     	inner join tbl_usuario as usuario 
-		    on cliente.id_usuario = usuario.id
+	    	on lojista.id_usuario = usuario.id
 	    inner join tbl_status_usuario as status_usuario 
 			on usuario.id_status_usuario = status_usuario.id order by id desc limit 1;`
 
-    let rsStatusUsuario = await prisma.$queryRawUnsafe(sql);
+    let rsLojista = await prisma.$queryRawUnsafe(sql)
 
-    if (rsStatusUsuario.length > 0){
-        return rsStatusUsuario;
+    if (rsLojista.length > 0) {
+        return rsLojista
     } else {
-        return false;
+        return false
     }
 }
 
 
 
 module.exports = {
-   mdlSelectAllLojista
+    mdlSelectAllLojista,
+    mdlSelectLojistaId,
+    mdlSelectLastId
 }

@@ -86,10 +86,10 @@ const mdlSelectLastId = async function (){
 	    inner join tbl_status_usuario as status_usuario 
 			on usuario.id_status_usuario = status_usuario.id order by id desc limit 1;`
 
-    let rsStatusUsuario = await prisma.$queryRawUnsafe(sql);
+    let rsCliente = await prisma.$queryRawUnsafe(sql);
 
-    if (rsStatusUsuario.length > 0){
-        return rsStatusUsuario;
+    if (rsCliente.length > 0){
+        return rsCliente;
     } else {
         return false;
     }

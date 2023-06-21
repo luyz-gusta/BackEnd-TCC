@@ -14,6 +14,8 @@
 var message = require('./modulo/config.js')
 var usuarioDao = require('../model/DAO/usuarioDAO.js')
 var statusUsuarioDAO = require('../model/DAO/statusUsuarioDAO.js')
+var controllerLojista = require('./controller_lojista.js')
+var controllerCliente = require('./controller_cliente.js')
 
 //Retorna todos os usuarios
 const ctlGetUsuarios = async () => {
@@ -135,36 +137,37 @@ const ctlGetUsuarioEmailSenha = async (email, senha) => {
             let dadosUsuario = await usuarioDao.mdlSelectUsuarioByEmailAndSenha(email, senha)
 
             if (dadosUsuario) {
-
                 if (dadosUsuario[0].nivel == 'Lojista') {
-                    let pegarProfessor = await controllerProfessor.ctlGetBuscarProfessorIdUsuario(dadosUsuario[0].id)
+                    let pegarLojista = await controllerLojista.ctlGetLojistaID(dadosUsuario[0].id_usuario)
 
-                    if (pegarProfessor) {
+                    if (pegarLojista) {
                         dadosUsuariosJSON = {
                             status: message.SUCCESS_REQUEST.status,
                             message: message.SUCCESS_REQUEST.message,
-                            usuarios: dadosUsuario,
-                            professor: {
-                                id_professor: pegarProfessor.professores[0].id,
-                                nome: pegarProfessor.professores[0].nome,
-                                nif: pegarProfessor.professores[0].nif
+                            usuario: dadosUsuario,
+                            lojista: {
+                                id: pegarLojista[0].id_lojista,
+                                nome: pegarLojista[0].nome,
+                                telefone: pegarLojista[0].telefone,
                             }
                         }
                         return dadosUsuariosJSON
                     } else {
                         return message.ERROR_INVALID_ID
                     }
-                } else if (dadosUsuario[0].nivel == 'Clinete') {
-                    let pegarAluno = await controllerAluno.ctlGetBuscarAlunoIdUsuario(dadosUsuario[0].id)
+                } else if (dadosUsuario[0].nivel == 'Cliente') {
+                    let pegarCliente = await controllerCliente.ctlGetClienteID(dadosUsuario[0].id_usuario)
 
-                    if (pegarAluno) {
+                    if (pegarCliente) {
                         dadosUsuariosJSON = {
                             status: message.SUCCESS_REQUEST.status,
                             message: message.SUCCESS_REQUEST.message,
-                            usuarios: dadosUsuario,
-                            aluno: {
-                                id_matricula: pegarAluno.aluno[0].id_matricula,
-                                numero: pegarAluno.aluno[0].numero_matricula
+                            usuario: dadosUsuario,
+                            cliente: {
+                                id: pegarCliente[0].id_cliente,
+                                nome: pegarCliente[0].nome,
+                                telefone: pegarCliente[0].telefone,
+                                data_nascimento: pegarCliente[0].data_nascimento
                             }
                         }
                         return dadosUsuariosJSON

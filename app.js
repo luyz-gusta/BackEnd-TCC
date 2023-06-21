@@ -188,7 +188,15 @@ app.get('/v1/avicultura-silsan/usuario/:id', cors(), async function (request, re
 })
 
 //EndPoint: Retorna o usuario filtrando pelo Email e Senha
-app.get('/v1/avicultura-silsan/usuario/email/senha/:email', cors(), async function (request, response) {
+app.get('/v1/avicultura-silsan/usuario-email-senha', cors(), async function (request, response) {
+    let dadosUsuario = await controllerUsuario.ctlGetUsuarios()
+
+    response.status(dadosUsuario.status)
+    response.json(dadosUsuario)
+})
+
+//EndPoint: Retorna o usuario filtrando pelo Email e Senha
+app.get('/v1/avicultura-silsan/usuario-email-senha/:email', cors(), async function (request, response) {
     let emailUsuario = request.params.email
 
     let senhaUsuario = request.query.senha
@@ -302,7 +310,7 @@ app.get('/v1/avicultura-silsan/cliente', cors(), async function (request, respon
 //EndPoint: Retorna o cliente pelo id
 app.get('/v1/avicultura-silsan/cliente/:id', cors(), async function (request, response) {
     let idCliente = request.params.id
-    
+
     let dadosClientes = await controllerCliente.ctlGetClienteID(idCliente)
 
     response.status(dadosClientes.status)
@@ -340,9 +348,19 @@ app.post('/v1/avicultura-silsan/cliente', cors(), bodyParserJson, async function
 //Import do araquivo da controler que irá solicitar a model os do BD
 var controllerLojsita = require('./controller/controller_lojista.js')
 
-//EndPoint: Retorna todos os dados dos clientes
+//EndPoint: Retorna todos os lojistas
 app.get('/v1/avicultura-silsan/lojista', cors(), async function (request, response) {
     let dadosLojistas = await controllerLojsita.ctlGetLojistas()
+
+    response.status(dadosLojistas.status)
+    response.json(dadosLojistas)
+})
+
+//EndPoint: Retorna o lojista pelo id
+app.get('/v1/avicultura-silsan/lojista/:id', cors(), async function (request, response) {
+    let idLojista = request.params.id
+
+    let dadosLojistas = await controllerLojsita.ctlGetLojistaID(idLojista)
 
     response.status(dadosLojistas.status)
     response.json(dadosLojistas)

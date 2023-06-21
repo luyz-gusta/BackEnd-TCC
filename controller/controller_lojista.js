@@ -34,22 +34,22 @@ const ctlGetLojistas = async () => {
     }
 }
 
-const ctlGetClienteID = async (id) => {
+const ctlGetLojistaID = async (id) => {
     if (id == '' || id == undefined || isNaN(id)) {
         return message.ERROR_INVALID_ID
     } else {
-        let dadosClientesJSON = {}
+        let dadosLojistasJSON = {}
 
         //Chama a função do arquivo DAO que irá retornar todos os resgistros do DB
-        let dadosClientes = await clienteDao.mdlSelectClienteByID(id)
+        let dadosLojista = await lojistaDao.mdlSelectLojistaId(id)
 
-        if (dadosClientes) {
-            dadosClientesJSON = {
+        if (dadosLojista) {
+            dadosLojistasJSON = {
                 status: message.SUCCESS_REQUEST.status,
                 message: message.SUCCESS_REQUEST.message,
-                clientes: dadosClientes
+                lojistas: dadosLojista
             }
-            return dadosClientesJSON
+            return dadosLojistasJSON
         } else {
             return message.ERROR_REGISTER_NOT_FOUND
         }
@@ -85,5 +85,6 @@ const ctlInserirCliente = async (dadosCliente) => {
 }
 
 module.exports = {
-    ctlGetLojistas
+    ctlGetLojistas,
+    ctlGetLojistaID
 }
